@@ -3,8 +3,11 @@ package main
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+	"os"
+	"time"
+
+	"hello/mocking"
 )
 
 const spanish = "Spanish"
@@ -40,7 +43,18 @@ func MyGreeterHandler(w http.ResponseWriter, r *http.Request) {
 	Greet(w, "world")
 }
 
+type DefaultSleeper struct {
+}
+
+func (this DefaultSleeper) Sleep() {
+	time.Sleep(1 * time.Second)
+}
+
 func main() {
 	// 這是第一次看到 Golang 的 log
-	log.Fatal(http.ListenAndServe(":5001", http.HandlerFunc(MyGreeterHandler)))
+	//log.Fatal(http.ListenAndServe(":5001", http.HandlerFunc(MyGreeterHandler)))
+
+	sleeper := DefaultSleeper{}
+	fmt.Printf("sleeper %p\n", &sleeper)
+	mocking.Countdown(os.Stdout, sleeper)
 }
