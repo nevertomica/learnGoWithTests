@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+)
 
 const spanish = "Spanish"
 const french = "French"
@@ -26,6 +31,16 @@ func Hello(name string, language string) string {
 	return prefix + name
 }
 
+func Greet(writer io.Writer, name string) {
+	fmt.Fprintf(writer, "Hello, %s", name)
+}
+
+// 這是第一次看到 Golang 的 http 處理
+func MyGreeterHandler(w http.ResponseWriter, r *http.Request) {
+	Greet(w, "world")
+}
+
 func main() {
-	fmt.Println(Hello("world", ""))
+	// 這是第一次看到 Golang 的 log
+	log.Fatal(http.ListenAndServe(":5001", http.HandlerFunc(MyGreeterHandler)))
 }
