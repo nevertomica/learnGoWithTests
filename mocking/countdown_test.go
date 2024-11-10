@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"slices"
 	"testing"
+	"time"
 )
 
 const sleep = "sleep"
@@ -74,4 +75,29 @@ Go!`
 		}
 
 	})
+
+}
+
+// interface guard 可以檢查是否有實作特定 interface，此處是 Sleeper
+// var _ Sleeper = (*SpyTime)(nil)
+
+type SpyTime struct {
+	durationSlept time.Duration
+}
+
+func (s *SpyTime) sleep(duration time.Duration) {
+	s.durationSlept = duration
+}
+
+func TestConfigurableSleeper(t *testing.T) {
+	sleepTime := 5 * time.Second
+
+	spyTime := &SpyTime{}
+	sleeper := ConfigurableSleeper{sleepTime, spyTime.sleep}
+	sleeper.Sleep()
+
+	// 檢查 ConfigurableSleeper 的 Sleep 有無調用，如果有 SpyTime 則會設置 time Duration
+	if spyTime.durationSlept != sleepTime {
+		t.Errorf("should have slept for %v but slept for %v", sleepTime, spyTime.durationSlept)
+	}
 }

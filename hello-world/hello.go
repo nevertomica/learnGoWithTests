@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
+	"hello/mocking"
 	"io"
 	"net/http"
 	"os"
 	"time"
-
-	"hello/mocking"
 )
 
 const spanish = "Spanish"
@@ -46,7 +45,7 @@ func MyGreeterHandler(w http.ResponseWriter, r *http.Request) {
 type DefaultSleeper struct {
 }
 
-func (this DefaultSleeper) Sleep() {
+func (defaultSleeper *DefaultSleeper) Sleep() {
 	time.Sleep(1 * time.Second)
 }
 
@@ -54,7 +53,13 @@ func main() {
 	// 這是第一次看到 Golang 的 log
 	//log.Fatal(http.ListenAndServe(":5001", http.HandlerFunc(MyGreeterHandler)))
 
-	sleeper := DefaultSleeper{}
-	fmt.Printf("sleeper %p\n", &sleeper)
+	// sleeper := DefaultSleeper{}
+	// mocking.Countdown(os.Stdout, sleeper)
+
+	// 抽換成 ConfigurableSleeper
+	sleeper := &mocking.ConfigurableSleeper{}
+	sleeper.SetSleep(time.Sleep)
+	sleeper.SetDuration(3 * time.Second)
 	mocking.Countdown(os.Stdout, sleeper)
+
 }
