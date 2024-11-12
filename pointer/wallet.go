@@ -9,6 +9,7 @@ type Wallet struct {
 	balance BitCoin
 }
 
+// 讓基礎型別更具有可讀性
 type BitCoin int
 
 // BitCoin implement Stringer interface
